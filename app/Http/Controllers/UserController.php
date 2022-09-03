@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -25,8 +26,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $user = User::create($request->all());
+    {   $inputs = $request->all();
+        $inputs['password']=Hash::make($request->password);
+        $user = User::create($inputs);
         return response()->json($user, Response::HTTP_ACCEPTED);
     }
 
