@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -24,10 +25,16 @@ class AuthController extends Controller
      */
     public function login()
     {
-        $credentials = request(['email','phone', 'password']);
+        $username = request('username');
+        $type = request('type');
+        $password = request('password');
+        $credentials = [
+            $type=>$username,
+            'password'=>$password
+        ];
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized'], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         return $this->respondWithToken($token);
@@ -76,8 +83,10 @@ class AuthController extends Controller
     {
         return response()->json([
             'access_token' => $token,
+            'user'=>auth()->user(),
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
+            'expires_in' => auth()->factory()->getTTL() * 60,
+
+        ],Response::HTTP_MULTIPLE_CHOICES);
     }
 }

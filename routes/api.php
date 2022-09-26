@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,5 +33,15 @@ Route::group([
     Route::post('me', [AuthController::class,'me']);
 
 });
+Route::middleware(['auth:api','admin'])->group(function () {
+    Route::apiResource('users',UserController::class);
 
-Route::apiResource('users',UserController::class);
+});
+
+Route::post('users/check',[UserController::class,'check']);
+
+Route::post('users/check-code',[UserController::class,'checkCode']);
+
+Route::post('users/create-account',[UserController::class,'createAccount']);
+
+Route::post('users/forget-password',[UserController::class,'forgetPassword']);
